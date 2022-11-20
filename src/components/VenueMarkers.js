@@ -10,7 +10,7 @@ const VenueMarkers = (props) => {
       key={i}
       position={venue.geometry}
       icon={VenueLocationIcon}
-      eventHandlers={{click: () => props.showRoute(venue.route, i)}}
+      eventHandlers={{ click: () => props.showRoute(venue.route, i) }}
     >
       <MarkerPopup data={venue} />
     </Marker>
