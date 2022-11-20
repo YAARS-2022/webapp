@@ -1,15 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { MapContainer as Map, TileLayer, Polyline } from "react-leaflet";
+import React, { useState, useEffect, useRef } from "react";
+import { MapContainer as Map, TileLayer } from "react-leaflet";
 import data from "../assets/data.json";
 import Markers from "./VenueMarkers";
 import "./mapView.css";
 import { getBussesData } from "../firebase";
 import { Navbar } from "./Navbar/Navbar";
 import { Carts } from "./Carts/Carts";
-import { Sidebar } from "./Sidebar/Sidebar";
-import { childernData } from "./Sidebar/Data";
 
-import { useLocation, useNavigate } from "react-router-dom";
 import RoutingMachine from "./RoutingMachine";
 
 import "leaflet/dist/leaflet.css";
@@ -19,34 +16,52 @@ const MapView = (props) => {
     currentLocation: { lat: 27.691025218551726, lng: 85.33932172849848 },
     zoom: 13,
     data,
+    // routing: [],
   });
-  const [locationHistory, setLocationHistory] = useState([]);
-  const [highlightedRoute, sethighlighedRoute] = useState([]);
-  const limeOptions = { color: "green" };
+  const [busRoutingData, setBusRoutingData] = useState([
+    [27.691478240002265, 85.33895507995426],
+    [27.691740608939526, 85.33911996074187],
+    [27.69266524284368, 85.33932068517917],
+  ]);
 
-  const navigate = useNavigate();
+  const [locationHistory, setLocationHistory] = useState([]);
+
+  const rMachine = useRef();
 
   function showRoute(data) {
-    const parsedData = data.map((m) => [m._lat, m._long]);
-    sethighlighedRoute(parsedData);
+    if (data) {
+      const parsedData = data.map((m) => [m._lat, m._long]);
+      setBusRoutingData((busRoutingData) => {
+        return parsedData;
+      });
+    }
   }
+  useEffect(() => {
+    if (rMachine.current) {
+      console.log(rMachine.current)
+      rMachine.current.setWaypoints(busRoutingData);
+    }
+  }, [busRoutingData, rMachine]);
+
 
   async function updateMap() {
     const busses = await getBussesData();
     const templocationData = await busses[0].geometry;
     setLocationHistory([...locationHistory, templocationData]);
-    setState({
-      ...state,
-      data: {
-        venues: busses,
-      },
+    setState((state) => {
+      return {
+        ...state,
+        data: {
+          venues: busses,
+        },
+      };
     });
   }
   useEffect(() => {
     async function updateLocations(position) {
       const busses = await getBussesData();
       // const historyData = await getHistoryData()
-      const templocationData = busses[0].geometry;
+      // const templocationData = busses[0].geometry;
       setState({
         ...state,
         currentLocation: {
@@ -57,47 +72,21 @@ const MapView = (props) => {
           venues: busses,
         },
       });
-      setLocationHistory([...locationHistory, templocationData]);
+      // setLocationHistory([...locationHistory, templocationData]);
     }
     navigator.geolocation.getCurrentPosition(
-      async function (position) {
+      async function(position) {
         updateLocations(position);
       },
-      function (error) {
+      function(error) {
         console.error("Error Code = " + error.code + " - " + error.message);
       },
       {
         enableHighAccuracy: true,
       }
     );
-    const interval = setInterval(() => updateMap(), 1000);
+    setInterval(() => updateMap(), 10000);
   }, []);
-
-  /*
-  const location = useLocation();
-  useEffect(() => {
-    console.log(location)
-    if (location.state) {
-      if (location.state.latitude && location.state.longitude) {
-        const currentLocation = {
-          lat: location.state.latitude,
-          lng: location.state.longitude,
-        };
-        setState({
-          ...state,
-          data: {
-            venues: state.data.venues.concat({
-              name: "new",
-              geometry: [currentLocation.lat, currentLocation.lng],
-            }),
-          },
-          currentLocation,
-        });
-        navigate("/map");
-      }
-    }
-  }, [location]);
-  */
 
   return (
     <>
@@ -105,18 +94,18 @@ const MapView = (props) => {
       <Carts />
 
       <div className="map__home">
-        <div className="sidebar">
+        {/* <div className="sidebar">
           <Sidebar data={childernData} />
-        </div>
+        </div> */}
         <div className="map">
           <Map center={state.currentLocation} zoom={state.zoom}>
             <TileLayer
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
             />
-            <Polyline pathOptions={limeOptions} positions={highlightedRoute} />
             <Markers venues={state.data.venues} showRoute={showRoute} />
-            <RoutingMachine />
+            <RoutingMachine ref={rMachine} waypoints={busRoutingData} />
+            {/* <routingOverlay /> */}
           </Map>
         </div>
       </div>

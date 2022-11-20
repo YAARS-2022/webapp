@@ -8,15 +8,16 @@ import Home from "./components/Home";
 
 
 function App() {
+  console.log(Map)
   return (
     <Router>
       <Routes>
         <Route path="/map"
-        element={
-          <MapView />
-        }
-       />
-        <Route path="/" element={<Home/>} />
+          element={
+            <MapView />
+          }
+        />
+        <Route path="/" element={<Home />} />
       </Routes>
     </Router>
   );
