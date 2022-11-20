@@ -1,7 +1,6 @@
 import React from "react";
 import { Marker } from "react-leaflet";
 import { VenueLocationIcon } from "./VenueLocationIcon";
-import MarkerPopup from "./MarkerPopup";
 
 const VenueMarkers = (props) => {
   const { venues } = props;
@@ -12,7 +11,6 @@ const VenueMarkers = (props) => {
       icon={VenueLocationIcon}
       eventHandlers={{ click: () => props.showRoute(venue.route, i) }}
     >
-      <MarkerPopup data={venue} />
     </Marker>
   ));
   return <>{markers}</>;
