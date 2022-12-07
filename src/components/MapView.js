@@ -20,18 +20,17 @@ const MapView = (props) => {
   });
   const [busRoutingData, setBusRoutingData] = useState([]);
 
-  const [locationHistory, setLocationHistory] = useState([]);
-
-  const rMachine = useRef();
 
   function showRoute(data) {
     if (data) {
       const parsedData = data.map((m) => [m._lat, m._long]);
-      setBusRoutingData((busRoutingData) => {
+      setBusRoutingData(() => {
         return parsedData;
       });
     }
   }
+
+  const rMachine = useRef();
   useEffect(() => {
     if (rMachine.current) {
       console.log(rMachine.current)
@@ -39,20 +38,6 @@ const MapView = (props) => {
     }
   }, [busRoutingData, rMachine]);
 
-
-  async function updateMap() {
-    const busses = await getBussesData();
-    const templocationData = await busses[0].geometry;
-    setLocationHistory([...locationHistory, templocationData]);
-    setState((state) => {
-      return {
-        ...state,
-        data: {
-          venues: busses,
-        },
-      };
-    });
-  }
 
   useEffect(() => {
     async function updateLocations(position) {
@@ -68,6 +53,17 @@ const MapView = (props) => {
             venues: busses,
           },
         }
+      });
+    }
+    async function updateMap() {
+      const busses = await getBussesData();
+      setState((state) => {
+        return {
+          ...state,
+          data: {
+            venues: busses,
+          },
+        };
       });
     }
     navigator.geolocation.getCurrentPosition(
