@@ -1,5 +1,5 @@
 import L from "leaflet";
-import venue_location_icon from "../assets/venue_location_icon.svg"
+import venue_location_icon from "../../assets/venue_location_icon.svg"
 
 L.Icon.Default.prototype.options = {
   iconUrl: venue_location_icon,

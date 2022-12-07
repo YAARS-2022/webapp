@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
-import { initializeApp, getApps,  } from "firebase/app";
+import { initializeApp, } from "firebase/app";
 import { getFirestore, collection, getDocs } from "firebase/firestore/lite";
-import apiKey from "./config";
+import config from "../config.json"
 
 // TODO: Add SDKs for Firebase products that you want to use
 
@@ -10,7 +10,7 @@ import apiKey from "./config";
 async function getBusses(db) {
   const busCol = collection(db, "Buses");
   const busSnapshot = await getDocs(busCol);
-  let cityList = busSnapshot.docs.map((doc) => {return {...doc.data(), id: doc.id}});
+  let cityList = busSnapshot.docs.map((doc) => { return { ...doc.data(), id: doc.id } });
   cityList = cityList.map((c) => {
     const object = {
       name: c.name,
@@ -28,20 +28,12 @@ async function getBusses(db) {
 async function getHistory(db) {
   const history = collection(db, "History");
   const historySnapshot = await getDocs(history);
-  let historyList = historySnapshot.docs.map((doc) => {return {...doc.data(), id: doc.id}});
+  let historyList = historySnapshot.docs.map((doc) => { return { ...doc.data(), id: doc.id } });
   return historyList;
 }
 
 function getDB() {
-  const firebaseConfig = {
-    apiKey: apiKey,
-    authDomain: "years-1264e.firebaseapp.com",
-    projectId: "years-1264e",
-    storageBucket: "years-1264e.appspot.com",
-    messagingSenderId: "578209780241",
-    appId: "1:578209780241:web:976e3c2e1c4c1706b957b0",
-    measurementId: "G-93M3FE5CGR",
-  };
+  const firebaseConfig = config;
 
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
@@ -55,4 +47,5 @@ export async function getBussesData() {
 export async function getHistoryData() {
   return getHistory(getDB())
 }
+
 

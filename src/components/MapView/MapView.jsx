@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
 import { MapContainer as Map, TileLayer } from "react-leaflet";
-import data from "../assets/data.json";
+import data from "../../assets/data.json";
 import Markers from "./VenueMarkers";
 import "./mapView.css";
-import { getBussesData } from "../firebase";
-import { Navbar } from "./Navbar/Navbar";
-import { Carts } from "./Carts/Carts";
+import { getBussesData } from "../../firebase";
+import { Navbar } from "../Navbar/Navbar";
+import Carts from "../Carts";
 
 import RoutingMachine from "./RoutingMachine";
 
@@ -16,7 +16,6 @@ const MapView = (props) => {
     currentLocation: { lat: 27.691025218551726, lng: 85.33932172849848 },
     zoom: 13,
     data,
-    // routing: [],
   });
   const [busRoutingData, setBusRoutingData] = useState([]);
 
